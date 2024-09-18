@@ -32,53 +32,50 @@ class Dimensions(NamedTuple):
     def __repr__(self) -> str:
         return f"{self.width}×{self.height}×{self.length}"
 
-truck = Dimensions(4, 5, 5)
+BoxId = str
+Stop = int
+
+class Box(NamedTuple):
+    box_id: BoxId
+    size: Dimensions
+    route_order: Stop
+
+truck = Dimensions(width=4, height=5, length=5)
+
+boxes: list[Box] = [
+    Box(box_id="1", size=Dimensions(2, 1, 3), route_order=0),
+    Box(box_id="2", size=Dimensions(4, 2, 1), route_order=0),
+    Box(box_id="3", size=Dimensions(1, 4, 4), route_order=1),
+    Box(box_id="4", size=Dimensions(3, 2, 2), route_order=2),
+]
 
 # Space of voxel to model our problem with
 space: set[Voxel] = truck.voxels
-
-box_sizes: list[Dimensions] = [
-    Dimensions(2, 1, 3),
-    Dimensions(4, 2, 1),
-    Dimensions(1, 4, 4),
-    Dimensions(3, 2, 2),
-]
-
-BoxIdx = int
-Stop = int
-route_order: dict[BoxIdx, Stop] = {
-    0: 0,
-    1: 0,
-    2: 1,
-    3: 2,
-}
-
-boxes: list[set[Voxel]] = [size.voxels for size in box_sizes]
 
 print("Boxes:")
 for box in boxes:
     print(box)
 
 # Voxels of a box #idx for given offset
-offset_boxes: dict[tuple[BoxIdx, Voxel], set[Voxel]] = {}
+offset_boxes: dict[tuple[BoxId, Voxel], set[Voxel]] = {}
 # Variable to describe whether Box #idx has a specific offset
-box_offset_var: dict[tuple[BoxIdx, Voxel], cp_model.IntVar] = {}
-for idx, box in enumerate(boxes):
+box_offset_var: dict[tuple[BoxId, Voxel], cp_model.IntVar] = {}
+for box in boxes:
     for offset in space:
-        offset_box = {voxel + offset for voxel in box}
+        offset_box = {voxel + offset for voxel in box.size.voxels}
         # Make sure the box is contained in the space
         if all(voxel in space for voxel in offset_box):
-            offset_boxes[(idx, offset)] = offset_box
-            box_offset_var[(idx, offset)] = model.NewBoolVar(f"box_{idx}_offset_{offset}")
+            offset_boxes[(box.box_id, offset)] = offset_box
+            box_offset_var[(box.box_id, offset)] = model.NewBoolVar(f"box_{box.box_id}_offset_{offset}")
 
 # Constraint: Each box must have exactly one offset
-for box_idx in range(len(boxes)):
+for box in boxes:
     model.Add(
-        sum(var for ((idx, offset), var) in box_offset_var.items() if idx == box_idx) == 1
+        sum(var for ((id, offset), var) in box_offset_var.items() if id == box.box_id) == 1
     )
 
 voxel_var: dict[Voxel, cp_model.IntVar] = {
-    voxel: sum(var for ((idx, offset), var) in box_offset_var.items() if voxel in offset_boxes[(idx, offset)])
+    voxel: sum(var for ((id, offset), var) in box_offset_var.items() if voxel in offset_boxes[(id, offset)])
     for voxel in space
 }
 for voxel in space:
@@ -92,24 +89,25 @@ for voxel in space:
 
 # Track z distance from the truck opening to the box
 # This variable is not strictly necessary, but helps in making the model cleaner
-box_front_z_var: list[cp_model.IntVar] = [
-    model.NewIntVar(0, truck.height - box_sizes[box_idx].height, f"box_front_z_{box_idx}")
-    for box_idx in range(len(box_sizes))
-]
-for box_idx in range(len(box_sizes)):
-    model.Add(box_front_z_var[box_idx] == sum(
-        (truck.length - box_sizes[box_idx].length - z) * var
-        for ((idx, (x, y, z)), var) in box_offset_var.items()
-        if idx == box_idx
+box_front_z_var: dict[BoxId, cp_model.IntVar] = {
+    box.box_id:
+    model.NewIntVar(0, truck.height - box.size.height, f"box_front_z_{box.box_id}")
+    for box in boxes
+}
+for box in boxes:
+    model.Add(box_front_z_var[box.box_id] == sum(
+        (truck.length - box.size.length - z) * var
+        for ((id, (x, y, z)), var) in box_offset_var.items()
+        if id == box.box_id
     ))
 
 # Optimize order to be suitable for route
 # The box with the latest stop should be the furthest back in the truck → their z-distance can be greatest
-stop_count = max(route_order.values()) + 1
+stop_count = max(box.route_order for box in boxes) + 1
 model.Minimize(
     sum(
-        (1 - 2 * route_order[box_idx] / (stop_count - 1)) * box_front_z_var[box_idx]
-        for box_idx in range(len(box_sizes))
+        (1 - 2 * box.route_order / (stop_count - 1)) * box_front_z_var[box.box_id]
+        for box in boxes
     )
 )
 
@@ -132,13 +130,13 @@ for ((idx, offset), var) in box_offset_var.items():
 print(box_at_voxel)
 
 
-def paint(box_idx: BoxIdx | None) -> str:
+def paint(box_idx: BoxId | None) -> str:
     if box_idx is None:
         return "×"
     return str(box_idx)
 
 
-for y in range(0, truck[1]):
-    for z in range(0, truck[2]):
-        print(" ".join(paint(box_at_voxel.get(Voxel(x, y, z))) for x in range(0, truck[0])))
+for y in range(0, truck.height):
+    for z in range(0, truck.length):
+        print(" ".join(paint(box_at_voxel.get(Voxel(x, y, z))) for x in range(0, truck.width)))
     print()
