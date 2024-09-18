@@ -1,2 +1,4 @@
 ortools
+pydantic
 pytest
+fastapi
