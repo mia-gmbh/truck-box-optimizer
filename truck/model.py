@@ -24,6 +24,7 @@ class PositionedBoxDto(BaseModel):
 class PackingDto(BaseModel):
     truck: Coords
     boxes: list[PositionedBoxDto]
+    grid: Coords
 
 
 # Domain model

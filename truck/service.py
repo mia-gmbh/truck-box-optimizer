@@ -63,5 +63,6 @@ async def pack_truck(problem: ProblemDto) -> PackingDto:
                 route_order=box.route_order,
             )
             for box in problem.boxes
-        ]
+        ],
+        grid=grid,
     )
