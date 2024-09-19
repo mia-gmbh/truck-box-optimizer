@@ -1,7 +1,7 @@
 {
   "truck": [165, 95, 255],
   "boxes": [
-    { "box_id": "success1", "size": [54, 31, 84], "route_order": 0 },
+    { "box_id": "success1", "route_order": 0 },
     { "box_id": "success2", "size": [54, 31, 84], "route_order": 0 },
     { "box_id": "success3", "size": [54, 31, 84], "route_order": 0 },
     { "box_id": "success4", "size": [54, 31, 84], "route_order": 0 },

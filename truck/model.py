@@ -8,7 +8,7 @@ Coords = tuple[float, float, float]
 
 class BoxDto(BaseModel):
     box_id: str
-    size: Coords
+    size: Coords | None = None
     route_order: int
 
 class ProblemDto(BaseModel):
