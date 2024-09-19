@@ -28,18 +28,30 @@ def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 300) -> tu
             sum(var for ((id, offset), var) in box_offset_var.items() if id == box.box_id) == 1
         )
 
+    # Constraint: Each voxel must only be occupied at most one box
     voxel_var: dict[Voxel, cp_model.IntVar] = {
         voxel: sum(var for ((id, offset), var) in box_offset_var.items() if voxel in offset_boxes[(id, offset)])
         for voxel in space
     }
     for voxel in space:
-        # Constraint: Each voxel must only be occupied at most one box
         model.Add(voxel_var[voxel] <= 1)
 
-        # Constraint: The voxels below a box must all be occupied
-        below = voxel + Voxel(0, -1, 0)
-        if below in space:
-            model.Add(voxel_var[voxel] <= voxel_var[below])
+    # Constraint: After each stop all voxels below a box must all be occupied
+    stops = {box.route_order for box in boxes}
+    box_orders = {box.box_id: box.route_order for box in boxes}
+    voxel_stop_var: dict[tuple[Voxel, int], cp_model.IntVar] = {
+        (voxel, stop): sum(
+            var
+            for ((id, offset), var) in box_offset_var.items()
+            if voxel in offset_boxes[(id, offset)] and box_orders[id] >= stop
+        )
+        for voxel in space
+        for stop in stops
+    }
+    for (voxel, stop) in voxel_stop_var:
+        if voxel.y > 0:
+            below = voxel + Voxel(0, -1, 0)
+            model.Add(voxel_stop_var[(voxel, stop)] <= voxel_stop_var[(below, stop)])
 
     # Track z distance from the truck opening to the box
     # This variable is not strictly necessary, but helps in making the model cleaner
