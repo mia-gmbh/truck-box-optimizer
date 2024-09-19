@@ -9,7 +9,12 @@ def load_example(name: str, is_partial: bool = False) -> tuple[ProblemDto, Packi
         result_data = (files(resources) / f"{name}.packing.json").read_text()
     except OSError:
         result_data = None
-    return (ProblemDto.model_validate_json(input_data), None if result_data is None else PackingDto.model_validate_json(result_data))
+    input_model = ProblemDto.model_validate_json(input_data)
+    try:
+        result_model = None if result_data is None else PackingDto.model_validate_json(result_data)
+    except:
+        result_model = None
+    return (input_model, result_model)
 
 def iter_examples(include_partials: bool = False) -> Generator[tuple[str, ProblemDto, PackingDto | None], None, None]:
     for file in files(resources).iterdir():

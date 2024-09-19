@@ -54,11 +54,13 @@ async def pack_truck(problem: ProblemDto) -> PackingDto:
         raise HTTPException(400, "Could not create an optimizer model")
 
     return PackingDto(
+        truck=problem.truck,
         boxes=[
             PositionedBoxDto(
                 box_id=box.box_id,
                 size=box.size,
                 offset=scale_back_offset(packing.box_offsets[box.box_id], factors),
+                route_order=box.route_order,
             )
             for box in problem.boxes
         ]

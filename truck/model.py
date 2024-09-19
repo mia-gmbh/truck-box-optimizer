@@ -19,8 +19,10 @@ class PositionedBoxDto(BaseModel):
     box_id: str
     size: Coords
     offset: Coords
+    route_order: int
 
 class PackingDto(BaseModel):
+    truck: Coords
     boxes: list[PositionedBoxDto]
 
 
