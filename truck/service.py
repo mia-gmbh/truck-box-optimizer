@@ -1,7 +1,7 @@
 """Define the main controller as FastAPI app."""
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from .model import Box, Dimensions, InfeasibleError
 from .solver import pack_truck as pack_truck_solver
 
@@ -29,7 +29,7 @@ async def pack_truck(truck: Coords, boxes: list[BoxData]) -> list[PositionedBox]
     ) for box in boxes]
 
     try:
-        box_at_voxel, box_offsets = pack_truck_solver(truck_model, boxes_model)
+        packing = pack_truck_solver(truck_model, boxes_model)
     except InfeasibleError:
         raise HTTPException(500)
     except ValueError:
@@ -39,7 +39,7 @@ async def pack_truck(truck: Coords, boxes: list[BoxData]) -> list[PositionedBox]
         PositionedBox(
             box_id=box.box_id,
             size=box.size,
-            offset=box_offsets[box.box_id],
+            offset=packing.box_offsets[box.box_id],
         )
         for box in boxes_model
     ]

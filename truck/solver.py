@@ -1,6 +1,6 @@
 from ortools.sat.python import cp_model
 
-from .model import Voxel, Dimensions, BoxId, Box, InfeasibleError
+from .model import Voxel, Dimensions, BoxId, Box, Packing, InfeasibleError
 
 def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
     model = cp_model.CpModel()
@@ -80,4 +80,4 @@ def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId],
             for voxel in offset_boxes[(id, offset)]:
                 box_at_voxel[voxel] = id
 
-    return box_at_voxel, box_offsets
+    return Packing(box_offsets, box_at_voxel)

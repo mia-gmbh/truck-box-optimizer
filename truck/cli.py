@@ -15,7 +15,7 @@ for box in boxes:
     print(box)
 
 try:
-    box_at_voxel, box_offsets = pack_truck(truck, boxes)
+    box_offsets, box_at_voxel = pack_truck(truck, boxes)
 except InfeasibleError:
     print("Unable to find a solution")
     exit()

@@ -37,5 +37,9 @@ class Box(NamedTuple):
     size: Dimensions
     route_order: Stop
 
+class Packing(NamedTuple):
+    box_offsets: dict[BoxId, Voxel]
+    box_at_voxel: dict[Voxel, BoxId]
+
 class InfeasibleError(Exception):
     pass
