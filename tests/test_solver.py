@@ -1,4 +1,5 @@
 from importlib.resources import files
+from fastapi import HTTPException
 import pytest
 from truck.model import ProblemDto, PackingDto
 from truck.service import pack_truck
@@ -14,7 +15,18 @@ def load_example(name: str) -> tuple[ProblemDto, PackingDto | None]:
 
 
 @pytest.mark.asyncio()
-async def test_satisfiable_example(subtests):
-    problem, expected_packing = load_example("example1")
-    packing = await pack_truck(problem)
-    assert packing == expected_packing
+async def test_examples(subtests):
+    for file in files(resources).iterdir():
+        filename = str(file)
+        if not filename.endswith(".json") or filename.endswith(".packing.json"):
+            continue
+        example_name = filename[:-5]
+
+        with subtests.test(test_name=f"{file.name}"):
+            problem, expected_packing = load_example(example_name)
+            if expected_packing is None:
+                with pytest.raises(HTTPException):
+                    await pack_truck(problem)
+            else:
+                packing = await pack_truck(problem)
+                assert packing == expected_packing

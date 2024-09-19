@@ -56,12 +56,13 @@ def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId],
     # Optimize order to be suitable for route
     # The box with the latest stop should be the furthest back in the truck → their z-distance can be greatest
     stop_count = max(box.route_order for box in boxes) + 1
-    model.Minimize(
-        sum(
-            (1 - 2 * box.route_order / (stop_count - 1)) * box_front_z_var[box.box_id]
-            for box in boxes
+    if stop_count > 1:
+        model.Minimize(
+            sum(
+                (1 - 2 * box.route_order / (stop_count - 1)) * box_front_z_var[box.box_id]
+                for box in boxes
+            )
         )
-    )
 
     solver = cp_model.CpSolver()
     status = solver.solve(model)
