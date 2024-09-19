@@ -1,4 +1,30 @@
+from pydantic import BaseModel
 from typing import NamedTuple
+
+
+# Dto Classes
+
+Coords = tuple[int, int, int]
+
+class BoxDto(BaseModel):
+    box_id: str
+    size: Coords
+    route_order: int
+
+class ProblemDto(BaseModel):
+    truck: Coords
+    boxes: list[BoxDto]
+
+class PositionedBoxDto(BaseModel):
+    box_id: str
+    size: Coords
+    offset: Coords
+
+class PackingDto(BaseModel):
+    boxes: list[PositionedBoxDto]
+
+
+# Domain model
 
 class Voxel(NamedTuple):
     x: int

@@ -1,32 +1,19 @@
 """Define the main controller as FastAPI app."""
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from .model import Box, Dimensions, InfeasibleError
+from .model import ProblemDto, PositionedBoxDto, PackingDto, Box, Dimensions, InfeasibleError
 from .solver import pack_truck as pack_truck_solver
 
 app = FastAPI()
 
-Coords = tuple[int, int, int]
-
-class BoxData(BaseModel):
-    box_id: str
-    size: Coords
-    route_order: int
-
-class PositionedBox(BaseModel):
-    box_id: str
-    size: Coords
-    offset: Coords
-
 @app.post("/truck:pack")
-async def pack_truck(truck: Coords, boxes: list[BoxData]) -> list[PositionedBox]:
-    truck_model = Dimensions(*truck)
+async def pack_truck(problem: ProblemDto) -> PackingDto:
+    truck_model = Dimensions(*problem.truck)
     boxes_model = [Box(
         box_id=box.box_id,
         size=Dimensions(*box.size),
         route_order=box.route_order,
-    ) for box in boxes]
+    ) for box in problem.boxes]
 
     try:
         packing = pack_truck_solver(truck_model, boxes_model)
@@ -35,11 +22,13 @@ async def pack_truck(truck: Coords, boxes: list[BoxData]) -> list[PositionedBox]
     except ValueError:
         raise HTTPException(400)
 
-    return [
-        PositionedBox(
-            box_id=box.box_id,
-            size=box.size,
-            offset=packing.box_offsets[box.box_id],
-        )
-        for box in boxes_model
-    ]
+    return PackingDto(
+        boxes=[
+            PositionedBoxDto(
+                box_id=box.box_id,
+                size=box.size,
+                offset=packing.box_offsets[box.box_id],
+            )
+            for box in boxes_model
+        ]
+    )
