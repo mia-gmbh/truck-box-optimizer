@@ -31,6 +31,14 @@ def set_box_size(box_id: BoxId, size: Coords) -> int:
     Returns the number of boxes updated.
     """
     count = 0
+
+    # TODO: scale values in App
+    size = (size[0] * 100, size[1] * 100, size[2] * 100)
+
+    # TODO: Detect what is up, right and left in App
+    sorted_size = sorted(size)
+    size = (sorted_size[0], sorted_size[2], sorted_size[1])
+
     for route in routes.values():
         for box in route.boxes:
             if box.box_id == box_id:
