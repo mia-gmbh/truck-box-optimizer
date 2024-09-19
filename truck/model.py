@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 # Dto Classes
 
-Coords = tuple[int, int, int]
+Coords = tuple[float, float, float]
 
 class BoxDto(BaseModel):
     box_id: str

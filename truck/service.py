@@ -2,6 +2,7 @@
 
 from fastapi import FastAPI, HTTPException
 from .model import BoxId, Coords, ProblemDto, PositionedBoxDto, PackingDto, Box, Dimensions, InfeasibleError
+from .rasterize import rasterize, scale_back_offset
 from .solver import pack_truck as pack_truck_solver
 from tests.examples import iter_examples
 
@@ -27,7 +28,7 @@ def set_box_size(box_id: BoxId, size: Coords) -> int:
     for route in routes.values():
         for box in route.boxes:
             if box.box_id == box_id:
-                box.size = Dimensions(*size)
+                box.size = size
                 count += 1
 
     if not count:
@@ -36,15 +37,11 @@ def set_box_size(box_id: BoxId, size: Coords) -> int:
 
 @app.post("/truck:pack")
 async def pack_truck(problem: ProblemDto) -> PackingDto:
-    truck_model = Dimensions(*problem.truck)
-    boxes_model = [Box(
-        box_id=box.box_id,
-        size=Dimensions(*box.size),
-        route_order=box.route_order,
-    ) for box in problem.boxes]
+    # Scale model so the amount of voxels is limited
+    grid, factors, scaled_boxes = rasterize(problem.truck, problem.boxes)
 
     try:
-        packing = pack_truck_solver(truck_model, boxes_model)
+        packing = pack_truck_solver(grid, scaled_boxes)
     except InfeasibleError:
         raise HTTPException(500)
     except ValueError:
@@ -55,8 +52,8 @@ async def pack_truck(problem: ProblemDto) -> PackingDto:
             PositionedBoxDto(
                 box_id=box.box_id,
                 size=box.size,
-                offset=packing.box_offsets[box.box_id],
+                offset=scale_back_offset(packing.box_offsets[box.box_id], factors),
             )
-            for box in boxes_model
+            for box in problem.boxes
         ]
     )

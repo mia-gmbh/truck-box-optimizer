@@ -2,7 +2,9 @@ from ortools.sat.python import cp_model
 
 from .model import Voxel, Dimensions, BoxId, Box, Packing, InfeasibleError
 
-def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 10) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
+def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 60) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
+    """Find a packing of boxes in the truck."""
+
     model = cp_model.CpModel()
 
     # Space of voxel to model our problem with
