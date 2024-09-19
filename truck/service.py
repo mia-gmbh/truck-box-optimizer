@@ -1,7 +1,7 @@
 """Define the main controller as FastAPI app."""
 
 from fastapi import FastAPI, HTTPException
-from .model import BoxId, Coords, ProblemDto, PositionedBoxDto, PackingDto, Box, Dimensions, InfeasibleError
+from .model import BoxId, Coords, ProblemDto, PositionedBoxDto, PackingDto, InfeasibleError
 from .rasterize import rasterize, scale_back_offset
 from .solver import pack_truck as pack_truck_solver
 from tests.examples import iter_examples
