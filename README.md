@@ -9,10 +9,10 @@ pipe install -r requirements
 
 Start REST service:
 ```sh
-uvicorn truck.service:app
+uvicorn --host=0.0.0.0 truck.service:app
 ```
 
 Fire example data with httpie:
 ```sh
-http :8000/truck:pack < example1.json
+http :8000/truck:pack < tests/resources/example1.json
 ```

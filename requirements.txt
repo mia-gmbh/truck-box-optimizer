@@ -1,4 +1,6 @@
 ortools
 pydantic
 pytest
+pytest-subtests
+pytest-asyncio
 fastapi

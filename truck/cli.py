@@ -1,7 +1,7 @@
 from .model import Dimensions, Box, Voxel, BoxId, InfeasibleError
 from .solver import pack_truck
 
-truck = Dimensions(width=4, height=5, length=5)
+truck = Dimensions(width=400, height=500, length=500)
 
 boxes: list[Box] = [
     Box(box_id="1", size=Dimensions(2, 1, 3), route_order=0),
