@@ -1,10 +1,47 @@
 {
-    "truck": [279, 238, 238],
+    "truck": [162, 93, 252],
     "boxes": [
-      { "box_id": "1", "size": [27, 27, 50], "route_order": 0 },
-      { "box_id": "2", "size": [35, 44, 35], "route_order": 0 },
-      { "box_id": "3", "size": [50, 40, 70], "route_order": 1 },
-      { "box_id": "4", "size": [40, 40, 60], "route_order": 2 }
+      { "box_id": "1", "size": [54, 31, 84], "route_order": 0 }, 
+      { "box_id": "2", "size": [54, 31, 84], "route_order": 0 }, 
+      { "box_id": "3", "size": [54, 31, 84], "route_order": 0 }, 
+      { "box_id": "4", "size": [54, 31, 84], "route_order": 0 }, 
+      { "box_id": "5", "size": [27, 15, 42], "route_order": 0 }, 
+      { "box_id": "6", "size": [27, 15, 42], "route_order": 0 },
+      { "box_id": "7", "size": [27, 15, 42], "route_order": 0 }, 
+      { "box_id": "8", "size": [27, 15, 42], "route_order": 0 },
+      { "box_id": "9", "size": [27, 15, 42], "route_order": 0 }, 
+      { "box_id": "10", "size": [27, 15, 42], "route_order": 0 },
+      { "box_id": "11", "size": [54, 31, 84], "route_order": 0 }, 
+      { "box_id": "12", "size": [54, 31, 84], "route_order": 0 }, 
+
+      { "box_id": "13", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "14", "size": [27, 15, 42], "route_order": 1 }, 
+      { "box_id": "15", "size": [27, 15, 42], "route_order": 1 },
+      { "box_id": "16", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "17", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "18", "size": [13, 7, 21], "route_order": 1 }, 
+      { "box_id": "19", "size": [13, 7, 21], "route_order": 1 }, 
+      { "box_id": "20", "size": [13, 7, 21], "route_order": 1 }, 
+      { "box_id": "21", "size": [13, 7, 21], "route_order": 1 }, 
+      { "box_id": "22", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "23", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "24", "size": [54, 31, 84], "route_order": 1 }, 
+      { "box_id": "25", "size": [54, 31, 84], "route_order": 1 }, 
+
+      { "box_id": "26", "size": [13, 7, 21], "route_order": 2 }, 
+      { "box_id": "27", "size": [13, 7, 21], "route_order": 2 }, 
+      { "box_id": "28", "size": [13, 7, 21], "route_order": 2 }, 
+      { "box_id": "29", "size": [13, 7, 21], "route_order": 2 }, 
+      { "box_id": "30", "size": [27, 15, 42], "route_order": 2 }, 
+      { "box_id": "31", "size": [27, 15, 42], "route_order": 2 },
+      { "box_id": "32", "size": [54, 31, 84], "route_order": 2 }, 
+      { "box_id": "33", "size": [54, 31, 84], "route_order": 2 }, 
+      { "box_id": "34", "size": [54, 31, 84], "route_order": 2 }, 
+      { "box_id": "35", "size": [54, 31, 84], "route_order": 2 }, 
+      { "box_id": "36", "size": [27, 15, 42], "route_order": 2 }, 
+      { "box_id": "37", "size": [27, 15, 42], "route_order": 2 },
+      { "box_id": "38", "size": [54, 31, 84], "route_order": 2 }, 
+      { "box_id": "39", "size": [54, 31, 84], "route_order": 2 } 
     ]
-  }
+}
   
