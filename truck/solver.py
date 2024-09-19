@@ -2,7 +2,7 @@ from ortools.sat.python import cp_model
 
 from .model import Voxel, Dimensions, BoxId, Box, Packing, InfeasibleError
 
-def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
+def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 10) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
     model = cp_model.CpModel()
 
     # Space of voxel to model our problem with
@@ -65,6 +65,7 @@ def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId],
         )
 
     solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = time_limit
     status = solver.solve(model)
 
     if status == cp_model.INFEASIBLE:
