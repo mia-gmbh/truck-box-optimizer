@@ -43,7 +43,7 @@ def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId],
     # This variable is not strictly necessary, but helps in making the model cleaner
     box_front_z_var: dict[BoxId, cp_model.IntVar] = {
         box.box_id:
-        model.NewIntVar(0, truck.height - box.size.height, f"box_front_z_{box.box_id}")
+        model.NewIntVar(0, truck.length, f"box_front_z_{box.box_id}")
         for box in boxes
     }
     for box in boxes:
