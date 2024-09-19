@@ -9,22 +9,31 @@ def possible_grids(voxel_limit: int) -> Generator[Dimensions, None, None]:
             for divide_length in range(6, floor(voxel_limit / (divide_width * divide_height)) + 1):
                 yield Dimensions(divide_width, divide_height, divide_length)
 
-def rasterize(truck: Coords, boxes: list[BoxDto], voxel_limit: int = 2000) -> tuple[Dimensions, Coords, list[Box]]:
+def rasterize(truck: Coords, boxes: list[BoxDto], voxel_limit: int = 1000) -> tuple[Dimensions, Coords, list[Box]]:
     """Find a way to divide the ruck into voxel units with a limit on the number of voxels."""
     best = None
+    best_voxel_count = float('Infinity')
     best_error = float('Infinity')
+    truck_volume = truck[0] * truck[1] * truck[2]
     for grid in possible_grids(voxel_limit):
+        voxel_count = grid.width * grid.height * grid.length
         factors = (grid.width / truck[0], grid.height / truck[1], grid.length / truck[2])
 
+        # Error is the relative truck volume wasted
         error = sum(
-            ceil(box.size[0] * factors[0]) / factors[0] - box.size[0]
-            + ceil(box.size[1] * factors[1]) / factors[1] - box.size[1]
-            + ceil(box.size[2] * factors[2]) / factors[2] - box.size[2]
+            (ceil(box.size[0] * factors[0]) / factors[0])
+            * (ceil(box.size[1] * factors[1]) / factors[1])
+            * (ceil(box.size[2] * factors[2]) / factors[2])
+            - box.size[0] * box.size[1] * box.size[2]
             for box in boxes
-        )
+        ) / truck_volume
 
-        if error < best_error:
+        # Heuristic to balance voxel count against approximation error
+        if error <= best_error and (
+            voxel_count <= best_voxel_count or (voxel_count - best_voxel_count) / voxel_limit < best_error - error
+        ):
             best_error = error
+            best_voxel_count = voxel_count
 
             scaled_boxes = [Box(
                 box_id=box.box_id,
