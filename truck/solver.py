@@ -8,9 +8,9 @@ def pack_truck(truck: Dimensions, boxes: list[Box]) -> tuple[dict[Voxel, BoxId],
     # Space of voxel to model our problem with
     space: set[Voxel] = truck.voxels
 
-    # Voxels of a box #idx for given offset
+    # Voxels of a box for given offset
     offset_boxes: dict[tuple[BoxId, Voxel], set[Voxel]] = {}
-    # Variable to describe whether Box #idx has a specific offset
+    # Variable to describe whether Box has a specific offset
     box_offset_var: dict[tuple[BoxId, Voxel], cp_model.IntVar] = {}
     for box in boxes:
         for offset in space:
