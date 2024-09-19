@@ -1,12 +1,15 @@
 """Define the main controller as FastAPI app."""
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from .model import BoxId, Coords, ProblemDto, PositionedBoxDto, PackingDto, InfeasibleError
 from .rasterize import rasterize, scale_back_offset
 from .solver import pack_truck as pack_truck_solver
 from tests.examples import iter_examples
 
 app = FastAPI()
+
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 routes: dict[str, ProblemDto] = {
     name: problem
