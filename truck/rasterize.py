@@ -1,6 +1,6 @@
 from math import floor, ceil
 from typing import Generator
-from .model import Coords, Box, Dimensions, Voxel, BoxDto
+from .model import Coords, Box, Dimensions, Voxel, BoxDtoWithSize
 
 def possible_grids(voxel_limit: int) -> Generator[Dimensions, None, None]:
     max_div = floor(voxel_limit ** (1/3)) * 3
@@ -9,7 +9,7 @@ def possible_grids(voxel_limit: int) -> Generator[Dimensions, None, None]:
             for divide_length in range(6, floor(voxel_limit / (divide_width * divide_height)) + 1):
                 yield Dimensions(divide_width, divide_height, divide_length)
 
-def rasterize(truck: Coords, boxes: list[BoxDto], voxel_limit: int = 1000) -> tuple[Dimensions, Coords, list[Box]]:
+def rasterize(truck: Coords, boxes: list[BoxDtoWithSize], voxel_limit: int = 1000) -> tuple[Dimensions, Coords, list[Box]]:
     """Find a way to divide the ruck into voxel units with a limit on the number of voxels."""
     best = None
     best_voxel_count = float('Infinity')

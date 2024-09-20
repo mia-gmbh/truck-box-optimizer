@@ -11,9 +11,18 @@ class BoxDto(BaseModel):
     size: Coords | None = None
     route_order: int
 
+class BoxDtoWithSize(BaseModel):
+    box_id: str
+    size: Coords
+    route_order: int
+
 class ProblemDto(BaseModel):
     truck: Coords
     boxes: list[BoxDto]
+
+class ProblemDtoWithSize(BaseModel):
+    truck: Coords
+    boxes: list[BoxDtoWithSize]
 
 class PositionedBoxDto(BaseModel):
     box_id: str

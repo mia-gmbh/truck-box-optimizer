@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .model import BoxId, Coords, ProblemDto, PositionedBoxDto, PackingDto, InfeasibleError
+from .model import BoxId, Coords, ProblemDto, ProblemDtoWithSize, PositionedBoxDto, PackingDto, InfeasibleError
 from .rasterize import rasterize, scale_back_offset
 from .solver import pack_truck as pack_truck_solver
 from tests.examples import iter_examples
@@ -50,10 +50,7 @@ def set_box_size(box_id: BoxId, size: Coords) -> int:
     return count
 
 @app.post("/truck:pack")
-async def pack_truck(problem: ProblemDto) -> PackingDto:
-    if any(box.size is None for box in problem.boxes):
-        raise HTTPException(400, "Not all boxes have sizes")
-
+async def pack_truck(problem: ProblemDtoWithSize) -> PackingDto:
     # Scale model so the amount of voxels is limited
     grid, factors, scaled_boxes = rasterize(problem.truck, problem.boxes)
 

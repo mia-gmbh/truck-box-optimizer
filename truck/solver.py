@@ -2,7 +2,7 @@ from ortools.sat.python import cp_model
 
 from .model import Voxel, Dimensions, BoxId, Box, Packing, InfeasibleError
 
-def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 300) -> tuple[dict[Voxel, BoxId], dict[BoxId, Voxel]]:
+def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 300) -> Packing:
     """Find a packing of boxes in the truck."""
 
     model = cp_model.CpModel()
@@ -30,7 +30,11 @@ def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 300) -> tu
 
     # Constraint: Each voxel must only be occupied at most one box
     voxel_var: dict[Voxel, cp_model.IntVar] = {
-        voxel: sum(var for ((id, offset), var) in box_offset_var.items() if voxel in offset_boxes[(id, offset)])
+        voxel: sum((
+            var
+            for ((id, offset), var) in box_offset_var.items()
+            if voxel in offset_boxes[(id, offset)]
+        ), model.NewIntVar(0, 0, "edge-case-fallback"))
         for voxel in space
     }
     for voxel in space:
@@ -40,11 +44,11 @@ def pack_truck(truck: Dimensions, boxes: list[Box], time_limit: int = 300) -> tu
     stops = {box.route_order for box in boxes}
     box_orders = {box.box_id: box.route_order for box in boxes}
     voxel_stop_var: dict[tuple[Voxel, int], cp_model.IntVar] = {
-        (voxel, stop): sum(
+        (voxel, stop): sum((
             var
             for ((id, offset), var) in box_offset_var.items()
             if voxel in offset_boxes[(id, offset)] and box_orders[id] >= stop
-        )
+        ), model.NewIntVar(0, 0, "edge-case-fallback"))
         for voxel in space
         for stop in stops
     }
